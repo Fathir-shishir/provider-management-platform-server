@@ -11,7 +11,7 @@ app.use(express.json())
 //   pass = Z75XB0wwlvKWxaZf 
 
 app.get('/', (req, res) => {
-    res.send('Hello World!')
+    res.send('Hello all!')
   })
 
 app.listen(port, () => {
