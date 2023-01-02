@@ -26,6 +26,8 @@ async function run(){
         await client.connect()
         const agreementsCollection = client.db('db_pmp').collection('agreements')
         const agreementsDetailsCollection = client.db('db_pmp').collection('agreementsDetails')
+        const usersCollection = client.db('db_pmp').collection('users')
+        const providersCollection = client.db('db_pmp').collection('providers')
 
         //  get all agreements
         app.get('/agreements',async(req,res)=>{
@@ -34,37 +36,65 @@ async function run(){
             const agreements = await cursor.toArray();
             res.send(agreements)
         })
-        //  Post an agreements
+        //post an agreements
         app.post('/agreements',async(req,res)=>{
-          
-          const newAgreements = req.body
-          console.log(newAgreements)
-          console.log(arguments)
-          const result = await agreementsCollection.insertOne(newAgreements)
-         
-          res.send(result)
+            const newAgreement = req.body
+            const result = await agreementsCollection.insertOne(newAgreement);
+            res.send(result);
+        })
+
+        // get all agreements details
+        app.get('/agreementsDetails',async(req,res)=>{
+            const query = {}
+            const cursor = agreementsDetailsCollection.find(query)
+            const agreementsDetails = await cursor.toArray();
+            res.send(agreementsDetails)
+        })
+        // post an agreements details
+        app.post('/agreementsDetails',async(req,res)=>{
+          const agreementsDetails = req.body
+          const result = await agreementsDetailsCollection.insertOne(agreementsDetails);
+          res.send(result);
       })
-
-      // get all agreements details
-     
-      app.get('/agreementsDetails',async(req,res)=>{
-        const query = {}
-        const cursor = agreementsDetailsCollection.find(query)
-        const agreementsDetails = await cursor.toArray();
-        res.send(agreementsDetails)
+        // get filter agreement details
+        app.get('/agreementsDetails/:id', async(req, res) =>{
+          const id = req.params.id;
+          const query = {agreementsId: id};
+          const agreementsDetails = await agreementsDetailsCollection.find(query).toArray();
+          res.send(agreementsDetails);
+        })
+         
+       // post an user
+       app.post('/users',async(req,res)=>{
+        const users = req.body
+        const result = await usersCollection.insertOne(users);
+        res.send(result);
     })
 
-   // get single agreements details
-      app.get('/agreementsDetails/:agreementsDetail',async(req,res)=>{
-        const id = req.params.agreementsDetail
-        const query = {_id:ObjectId(id)}
-        const agreementsDetail = await agreementsDetailsCollection.findOne(query)
-        res.send(agreementsDetail)
-    })
+    // post provider list
+    app.post('/providers',async(req,res)=>{
+      const providers = req.body
+      const result = await providersCollection.insertOne(providers);
+      res.send(result);
+  })
+  // get all provider details
+  app.get('/providers',async(req,res)=>{
+    const query = {}
+    const cursor = providersCollection.find(query)
+    const providers = await cursor.toArray();
+    res.send(providers)
+})
 
 
 
-    
+   // get filter provider details
+  app.get('/providers/:id', async(req, res) =>{
+    const id = req.params.id;
+    const query = {agreementsId: id};
+    const providersDetails = await providersCollection.find(query).toArray();
+    res.send(providersDetails);
+  })
+        
     }
     finally{
 
