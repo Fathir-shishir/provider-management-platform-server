@@ -28,6 +28,7 @@ async function run(){
         const agreementsDetailsCollection = client.db('db_pmp').collection('agreementsDetails')
         const usersCollection = client.db('db_pmp').collection('users')
         const providersCollection = client.db('db_pmp').collection('providers')
+        const selectedProfileCollection = client.db('db_pmp').collection('selectedProfiles')
 
         //  get all agreements
         app.get('/agreements',async(req,res)=>{
@@ -36,6 +37,25 @@ async function run(){
             const agreements = await cursor.toArray();
             res.send(agreements)
         })
+        // get single agreements 
+        app.get('/agreements/:id',async(req,res)=>{
+          const id = req.params.id
+          const query = {_id: ObjectId(id)}
+          const result = await agreementsCollection.findOne(query)
+          res.send(result)
+      })
+        
+       // update an agreements
+       app.put('/agreements/:id',async(req,res)=>{
+        const id = req.params.id
+        const updatedAgreements = req.body
+        const filter = {_id: ObjectId(id)}
+        const options = { upsert : true }
+        const updatedDoc = { $set : updatedAgreements}
+        const result = await agreementsCollection.updateOne(filter,updatedDoc,options)
+        res.send(result)
+    })
+      
         //post an agreements
         app.post('/agreements',async(req,res)=>{
             const newAgreement = req.body
@@ -75,6 +95,20 @@ async function run(){
     app.post('/providers',async(req,res)=>{
       const providers = req.body
       const result = await providersCollection.insertOne(providers);
+      res.send(result);
+  })
+    // get selected profile
+    app.get('/selectedProfile',async(req,res)=>{
+      const query = {}
+      const cursor = selectedProfileCollection.find(query)
+      const selectedProfile = await cursor.toArray();
+      res.send(selectedProfile)
+  })
+
+  //post selected profile
+    app.post('/selectedProfile',async(req,res)=>{
+      const selectedProfile = req.body
+      const result = await selectedProfileCollection.insertOne(selectedProfile);
       res.send(result);
   })
   // get all provider details
