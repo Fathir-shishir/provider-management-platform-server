@@ -29,6 +29,7 @@ async function run(){
         const usersCollection = client.db('db_pmp').collection('users')
         const providersCollection = client.db('db_pmp').collection('providers')
         const selectedProfileCollection = client.db('db_pmp').collection('selectedProfiles')
+        const reviewCollection = client.db('db_pmp').collection('reviews')
 
         //  get all agreements
         app.get('/agreements',async(req,res)=>{
@@ -44,6 +45,14 @@ async function run(){
           const result = await agreementsCollection.findOne(query)
           res.send(result)
       })
+
+      //  get single providers 
+       app.get('/provider/:id',async(req,res)=>{
+        const id = req.params.id
+        const query = {_id: ObjectId(id)}
+        const result = await providersCollection.findOne(query)
+        res.send(result)
+    })
         
        // update an agreements
        app.put('/agreements/:id',async(req,res)=>{
@@ -55,6 +64,17 @@ async function run(){
         const result = await agreementsCollection.updateOne(filter,updatedDoc,options)
         res.send(result)
     })
+  // update provider 
+    app.put('/provider/:id',async(req,res)=>{
+      const id = req.params.id
+      const updatedprovider = req.body
+      const filter = {_id: ObjectId(id)}
+      const options = { upsert : true }
+      const updatedDoc = { $set : updatedprovider}
+      const result = await providersCollection.updateOne(filter,updatedDoc,options)
+      res.send(result)
+  })
+    
       
         //post an agreements
         app.post('/agreements',async(req,res)=>{
@@ -119,7 +139,13 @@ async function run(){
     res.send(providers)
 })
 
+//  add review 
 
+app.post('/review',async(req,res)=>{
+  const review = req.body
+  const result = await reviewCollection.insertOne(review);
+  res.send(result);
+})
 
    // get filter provider details
   app.get('/providers/:id', async(req, res) =>{
