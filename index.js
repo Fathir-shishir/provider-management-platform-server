@@ -125,6 +125,14 @@ async function run(){
       res.send(selectedProfile)
   })
 
+  // get review
+    app.get('/reviews',async(req,res)=>{
+      const query = {}
+      const cursor = reviewCollection.find(query)
+      const reviews = await cursor.toArray();
+      res.send(reviews)
+  })
+
   //post selected profile
     app.post('/selectedProfile',async(req,res)=>{
       const selectedProfile = req.body
